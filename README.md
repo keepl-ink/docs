@@ -18,11 +18,7 @@ All API routes are prefixed by the configured `Backend URL`
 ### `GET /healthz`
 This route gets called when a new backend url gets sets, so that the validity/existance of the server can be confirmed.
 
-#### Response `200 OK`
-```json
-{ "ok": 1 }
-```
-Any non-2xx response is treated as a configuration error and is shown as error to the user.
+Body is ignored. Any non-2xx response is treated as a configuration error and is shown as error to the user.
 
 
 ---
