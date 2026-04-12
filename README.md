@@ -6,7 +6,7 @@
 ```ts
 interface SavedUrl {
 	url: string;
-	name: string;
+	title: string
 	savedAt: number;
 }
 ```
@@ -44,7 +44,7 @@ Called every time a page is saved. Use this to index the page on the backend (e.
 ```ts
 {
   url:     string;  // full URL        — "https://example.com/article"
-  name:    string;  // page <title>    — "My Article | Example"
+  title:    string;  // page <title>    — "My Article | Example"
   savedAt: number;  // Unix ms         — 1711234567890
 }
 ```
