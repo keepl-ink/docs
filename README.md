@@ -15,7 +15,7 @@ interface SavedUrl {
 ## API Contract
 All API routes are prefixed by the configured `Backend URL`
 
-### `GET /extension/verify`
+### `GET /api/extension/verify`
 This route gets called when a new backend url gets sets, so that the validity/existance of the server can be confirmed.
 When auth is implemented, the API Key can be provided via `X-API-Key` header or via Bearer Token Auth.
 
@@ -24,7 +24,7 @@ Body is ignored. Any non-2xx response is treated as a configuration error and is
 
 ---
 
-### `GET /urls`
+### `GET /api/extension/urls`
 Called on every given interval on initial sync.
 
 #### Response Body
@@ -37,7 +37,7 @@ Called on every given interval on initial sync.
 
 ---
 
-### `POST /urls`
+### `POST /api/extension/urls`
 Called every time a page is saved. Use this to index the page on the backend (e.g. fetch content, generate embeddings, persist to a DB).
 
 #### Request body
@@ -57,7 +57,7 @@ Body should be ignored by the extension.
 
 ---
 
-### `DELETE /urls/:url`
+### `DELETE /api/extension/urls/:url`
 
 Called every time a saved page is removed. `:url` is the full URL, **url-encoded**.
 
