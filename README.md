@@ -15,8 +15,9 @@ interface SavedUrl {
 ## API Contract
 All API routes are prefixed by the configured `Backend URL`
 
-### `GET /healthz`
+### `GET /extension/verify`
 This route gets called when a new backend url gets sets, so that the validity/existance of the server can be confirmed.
+When auth is implemented, the API Key can be provided via `X-API-Key` header or via Bearer Token Auth.
 
 Body is ignored. Any non-2xx response is treated as a configuration error and is shown as error to the user.
 
