@@ -24,7 +24,7 @@ Body is ignored. Any non-2xx response is treated as a configuration error and is
 
 ---
 
-### `GET /api/extension/urls`
+### `GET /api/keeps`
 Called on every given interval on initial sync.
 
 #### Response Body
@@ -37,7 +37,7 @@ Called on every given interval on initial sync.
 
 ---
 
-### `POST /api/extension/urls`
+### `POST /api/keeps`
 Called every time a page is saved. Use this to index the page on the backend (e.g. fetch content, generate embeddings, persist to a DB).
 
 #### Request body
@@ -57,7 +57,7 @@ Body should be ignored by the extension.
 
 ---
 
-### `DELETE /api/extension/urls/:url`
+### `DELETE /api/keeps/:url`
 
 Called every time a saved page is removed. `:url` is the full URL, **url-encoded**.
 
