@@ -1,0 +1,225 @@
+openapi: 3.0.3
+info:
+  title: Keepl API
+  description: API for managing saved URLs and bookmarks
+  version: 1.0.0
+  contact:
+    name: Keepl API Support
+    url: https://github.com/leonhardbreuer/keepl
+servers:
+  - url: '{backendUrl}/api'
+    description: Configurable backend server
+    variables:
+      backendUrl:
+        default: https://api.keepl.com
+        description: The backend URL configured by the user
+security:
+  - ApiKeyAuth: []
+  - BearerAuth: []
+  - {}
+
+paths:
+  /extension/verify:
+    get:
+      summary: Verify backend configuration
+      description: |
+        This route gets called when a new backend URL is set, so that the 
+        validity/existence of the server can be confirmed. When auth is 
+        implemented, the API Key can be provided via X-API-Key header or 
+        via Bearer Token Auth.
+      operationId: verifyBackend
+      responses:
+        '200':
+          description: Backend is valid and accessible
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+        '4xx':
+          description: Configuration error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '5xx':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /keeps:
+    get:
+      summary: Get all saved URLs
+      description: Called on every given interval for initial sync
+      operationId: getKeeps
+      responses:
+        '200':
+          description: List of saved URLs
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - count
+                  - items
+                properties:
+                  count:
+                    type: integer
+                    description: Total number of saved URLs
+                    example: 42
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SavedUrl'
+        '4xx':
+          description: Client error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '5xx':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      summary: Save a new URL
+      description: |
+        Called every time a page is saved. Use this to index the page on the 
+        backend (e.g. fetch content, generate embeddings, persist to a DB).
+      operationId: saveUrl
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SavedUrl'
+            example:
+              url: https://example.com/article
+              title: My Article | Example
+              savedAt: 1711234567890
+      responses:
+        '200':
+          description: URL saved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: URL saved successfully
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '4xx':
+          description: Client error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '5xx':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /keeps/{url}:
+    delete:
+      summary: Delete a saved URL
+      description: |
+        Called every time a saved page is removed. The URL parameter should 
+        be URL-encoded.
+      operationId: deleteUrl
+      parameters:
+        - name: url
+          in: path
+          required: true
+          description: The URL to delete (must be URL-encoded)
+          schema:
+            type: string
+            format: uri
+          example: https%3A%2F%2Fexample.com%2Farticle
+      responses:
+        '200':
+          description: URL deleted successfully
+        '204':
+          description: URL deleted successfully (no content)
+        '404':
+          description: URL not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '4xx':
+          description: Client error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '5xx':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    BearerAuth:
+      type: http
+      scheme: bearer
+
+  schemas:
+    SavedUrl:
+      type: object
+      required:
+        - url
+        - title
+        - savedAt
+      properties:
+        url:
+          type: string
+          format: uri
+          description: Full URL of the saved page
+          example: https://example.com/article
+        title:
+          type: string
+          description: Page title from the <title> tag
+          example: My Article | Example
+        savedAt:
+          type: integer
+          format: int64
+          description: Unix timestamp in milliseconds when the URL was saved
+          example: 1711234567890
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: Invalid request
+        code:
+          type: string
+          description: Error code
+          example: INVALID_REQUEST
+        details:
+          type: string
+          description: Additional error details
+          example: The provided URL is not valid

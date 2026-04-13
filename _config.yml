@@ -1,0 +1,11 @@
+title: Keepl API Documentation
+description: Interactive API documentation for the Keepl service
+theme: jekyll-theme-minimal
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true
+  collections: true
+include:
+  - api.yaml
+  - index.html
